@@ -1,7 +1,6 @@
 """Осуществляет все запросы к базе данных."""
 import aiosqlite
 
-
 class Database:
     def __init__(self, db_file):
         self.db_name = db_file
@@ -539,3 +538,13 @@ class Database:
                                      "telegram_id IS NOT NULL", (group_name,))
                 result = await cursor.fetchall()
                 return result
+    
+    async def get_user_logins(self):
+        logins = []
+        async with aiosqlite.connect(self.db_name) as db:
+            async with db.cursor() as cursor:
+                await cursor.execute("SELECT login FROM users")
+                rows = await cursor.fetchall()
+                for row in rows:
+                    logins.append(row[0])
+        return logins
